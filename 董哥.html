@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人介绍主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 背景图片轮播区域 */
+        .background-slider {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            background-color: #000; /* 图片加载前的背景色 */
+        }
+        
+        .slide.active {
+            opacity: 1;
+        }
+        
+        /* 减少覆盖层的透明度，使背景更清晰 */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5); /* 减少透明度 */
+            z-index: 0;
+        }
+        
+        /* 主内容容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 头部区域 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); /* 添加文字阴影增加可读性 */
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            color: #4dabf7;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+        
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7); /* 添加文字阴影增加可读性 */
+        }
+        
+        nav a:hover {
+            background: rgba(77, 171, 247, 0.3); /* 增加透明度 */
+            color: #4dabf7;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 900px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 简介部分 - 修改为透明背景 */
+        .intro-section {
+            background: rgba(20, 20, 30, 0.6); /* 减少透明度值，更透明 */
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(8px); /* 增加模糊效果，提升可读性 */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框增加层次感 */
+        }
+        
+        .intro-section h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #4dabf7;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .intro-section p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #f0f0f0; /* 使用更亮的颜色增加可读性 */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .highlight {
+            color: #4dabf7;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .tag {
+            display: inline-block;
+            background: rgba(77, 171, 247, 0.3); /* 增加透明度 */
+            color: #4dabf7;
+            padding: 5px 12px;
+            border-radius: 20px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 视频部分 - 修改为透明背景 */
+        .video-section {
+            background: rgba(20, 20, 30, 0.6); /* 减少透明度值，更透明 */
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(8px); /* 增加模糊效果，提升可读性 */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框增加层次感 */
+        }
+        
+        .video-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4dabf7;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.7); /* 视频容器背景保持较深色 */
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-description {
+            margin-top: 20px;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #f0f0f0; /* 使用更亮的颜色增加可读性 */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 周边和联系区域 */
+        .secondary-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 900px) {
+            .secondary-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 周边部分 - 修改为透明背景 */
+        .periphery-section {
+            background: rgba(20, 20, 30, 0.6); /* 减少透明度值，更透明 */
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(8px); /* 增加模糊效果，提升可读性 */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框增加层次感 */
+        }
+        
+        .periphery-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4dabf7;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .periphery-items {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 600px) {
+            .periphery-items {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .periphery-item {
+            background: rgba(30, 30, 40, 0.7); /* 稍微增加透明度，但仍保持可见性 */
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.3s, background 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .periphery-item:hover {
+            transform: translateY(-5px);
+            background: rgba(40, 40, 50, 0.8);
+        }
+        
+        .periphery-item i {
+            font-size: 24px;
+            color: #4dabf7;
+            margin-bottom: 10px;
+        }
+        
+        .periphery-item h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .periphery-item p {
+            font-size: 14px;
+            color: #ddd;
+            line-height: 1.5;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 联系部分 - 修改为透明背景 */
+        .contact-section {
+            background: rgba(20, 20, 30, 0.6); /* 减少透明度值，更透明 */
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(8px); /* 增加模糊效果，提升可读性 */
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* 添加边框增加层次感 */
+        }
+        
+        .contact-section h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #4dabf7;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            background: rgba(30, 30, 40, 0.7); /* 稍微增加透明度，但仍保持可见性 */
+            padding: 15px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .contact-item:hover {
+            background: rgba(77, 171, 247, 0.2); /* 增加透明度 */
+        }
+        
+        .contact-item i {
+            font-size: 22px;
+            color: #4dabf7;
+            width: 40px;
+        }
+        
+        .contact-details h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .contact-details p {
+            font-size: 14px;
+            color: #ddd;
+            text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.5);
+        }
+        
+        .social-icons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-icons a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(77, 171, 247, 0.3); /* 增加透明度 */
+            color: #fff;
+            border-radius: 50%;
+            font-size: 22px;
+            transition: all 0.3s;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        .social-icons a:hover {
+            background: rgba(77, 171, 247, 0.7);
+            transform: translateY(-5px);
+        }
+        
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f0f0f0; /* 使用更亮的颜色增加可读性 */
+            font-size: 16px;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* 背景轮播指示器 */
+        .slider-indicators {
+            position: fixed;
+            bottom: 30px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            z-index: 2;
+        }
+        
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .indicator.active {
+            background: #4dabf7;
+            transform: scale(1.2);
+        }
+        
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            nav ul {
+                gap: 15px;
+            }
+            
+            .intro-section h1 {
+                font-size: 28px;
+            }
+            
+            .video-section h2, .periphery-section h2, .contact-section h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景图片轮播 -->
+    <div class="background-slider">
+        <div class="slide active" style="background-image: url('微信图片_20251203231719.jpg');"></div>
+        <div class="slide" style="background-image: url('微信图片_20251203231919.jpg');"></div>
+        <div class="slide" style="background-image: url('微信图片_20251203231937.jpg');"></div>
+		<div class="slide" style="background-image: url('微信图片_20251203232001.jpg');"></div> <!-- 修正：移除多余的active类 -->
+		<div class="overlay"></div>
+    </div>
+    
+    <!-- 轮播指示器 -->
+    <div class="slider-indicators">
+        <div class="indicator active" data-index="0"></div>
+        <div class="indicator" data-index="1"></div>
+        <div class="indicator" data-index="2"></div>
+        <div class="indicator" data-index="3"></div>
+    </div>
+    
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 头部 -->
+        <header>
+            <div class="logo">
+                <i class="fas fa-user-circle"></i>
+                <span>董哥说事</span>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#intro">个人简介</a></li>
+                    <li><a href="#video">我的视频</a></li>
+                    <li><a href="#periphery">周边作品</a></li>
+                    <li><a href="#contact">联系我</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <!-- 主要内容区域 -->
+        <div class="main-content">
+            <!-- 简介部分 -->
+            <section class="intro-section" id="intro">
+                <h1>你好，我是董哥</h1>
+                <p>一名<span class="highlight">骑行兼摄影爱好者</span>和<span class="highlight">设计师</span>，拥有5年互联网冲浪经验。我热衷于办事，希望朋友们可以来找我办事，我的工作室叫董哥说事。</p>
+                <p>目前专注于给60+大爷大妈办事，擅长使用老年机。曾帮助多位老年人解决手机使用、APP操作等问题。</p>
+                <p>在业余时间，我喜欢骑行、摄影和分享生活知识。我相信真诚和热情是建立信任的关键。</p>
+                <div class="tags">
+                    <span class="tag">老年机专家</span>
+                    <span class="tag">骑行达人</span>
+                    <span class="tag">摄影爱好者</span>
+                    <span class="tag">热心办事</span>
+                    <span class="tag">社区服务</span>
+                    <span class="tag">生活帮手</span>
+                </div>
+            </section>
+            
+            <!-- 视频部分 -->
+            <section class="video-section" id="video">
+                <h2>董哥说事</h2>
+                <div class="video-container">
+                    <!-- 嵌入YouTube视频，这里使用一个示例视频 -->
+                    <iframe src="WeChat_20251203233205.mp4"
+                            title="YouTube video player" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                <p class="video-description">这个视频简要介绍了董哥说事。</p>
+            </section>
+        </div>
+        
+        <!-- 周边和联系区域 -->
+        <div class="secondary-content">
+            <!-- 周边部分 -->
+            <section class="periphery-section" id="periphery">
+                <h2>周边作品</h2>
+                <div class="periphery-items">
+                    <div class="periphery-item">
+                        <i class="fas fa-camera-retro"></i>
+                        <h3>摄影作品</h3>
+                        <p>记录骑行路上的美景与人文，捕捉生活中的美好瞬间。</p>
+                    </div>
+                    <div class="periphery-item">
+                        <i class="fas fa-bicycle"></i>
+                        <h3>骑行路线</h3>
+                        <p>探索并记录多条城市及郊区的骑行路线，分享骑行体验。</p>
+                    </div>
+                    <div class="periphery-item">
+                        <i class="fas fa-hands-helping"></i>
+                        <h3>社区服务</h3>
+                        <p>帮助老年人掌握智能手机使用技巧，解决日常生活中的难题。</p>
+                    </div>
+                    <div class="periphery-item">
+                        <i class="fas fa-comments"></i>
+                        <h3>董哥说事</h3>
+                        <p>分享办事经验、生活技巧和有趣见闻的日常记录。</p>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- 联系部分 -->
+            <section class="contact-section" id="contact">
+                <h2>联系方式</h2>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div class="contact-details">
+                            <h3>电子邮件</h3>
+                            <p>2142457417@qq.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div class="contact-details">
+                            <h3>电话</h3>
+                            <p>+86 110</p>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div class="contact-details">
+                            <h3>地址</h3>
+                            <p>中国北京市海淀区中关村科技园</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="social-icons">
+                    <a href="#" title="微信"><i class="fab fa-weixin"></i></a>
+                    <a href="#" title="QQ"><i class="fab fa-qq"></i></a>
+                    <a href="#" title="抖音"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" title="Bilibili"><i class="fab fa-bilibili"></i></a>
+                    <a href="#" title="微博"><i class="fab fa-weibo"></i></a>
+                </div>
+            </section>
+        </div>
+        
+        <!-- 页脚 -->
+        <footer>
+            <p>© 2025 董哥说事 - 个人主页. </p>
+            <p>最后更新: 2025年12月</p>
+        </footer>
+    </div>
+
+    <script>
+        // 背景图片轮播功能
+        const slides = document.querySelectorAll('.slide');
+        const indicators = document.querySelectorAll('.indicator');
+        let currentSlide = 0;
+        
+        // 修正：初始时设置正确的活动状态
+        function initSlides() {
+            // 确保只有一个slide有active类
+            slides.forEach((slide, index) => {
+                if (index === 0) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            
+            // 确保只有一个indicator有active类
+            indicators.forEach((indicator, index) => {
+                if (index === 0) {
+                    indicator.classList.add('active');
+                } else {
+                    indicator.classList.remove('active');
+                }
+            });
+            
+            currentSlide = 0;
+        }
+        
+        // 切换背景图片
+        function changeSlide(index) {
+            // 移除当前活动状态
+            slides[currentSlide].classList.remove('active');
+            indicators[currentSlide].classList.remove('active');
+            
+            // 更新当前索引
+            currentSlide = index;
+            
+            // 添加新的活动状态
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+        }
+        
+        // 自动轮播
+        function autoSlide() {
+            let nextSlide = (currentSlide + 1) % slides.length;
+            changeSlide(nextSlide);
+        }
+        
+        // 为指示器添加点击事件
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                changeSlide(index);
+                // 重置自动轮播计时器
+                clearInterval(slideInterval);
+                slideInterval = setInterval(autoSlide, 5000);
+            });
+        });
+        
+        // 启动自动轮播
+        let slideInterval;
+        
+        // 导航平滑滚动
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                
+                window.scrollTo({
+                    top: targetSection.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // 页面加载时显示动画效果
+        document.addEventListener('DOMContentLoaded', function() {
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 1s';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 300);
+            
+            // 初始化轮播
+            initSlides();
+            slideInterval = setInterval(autoSlide, 5000);
+            
+            // 为周边项目添加悬停效果
+            const peripheryItems = document.querySelectorAll('.periphery-item');
+            peripheryItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.5)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.boxShadow = 'none';
+                });
+            });
+            
+            // 视频自动播放控制
+            const video = document.getElementById('myVideo');
+            if (video) {
+                // 当视频进入视口时播放
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            // 视频进入视口，可以自动播放或显示控制
+                            video.controls = true;
+                        }
+                    });
+                }, { threshold: 0.5 });
+                
+                observer.observe(video);
+            }
+        });
+    </script>
+</body>
+</html>
